@@ -58,6 +58,30 @@ const GeneratedQuizCard = ({id, question, answer, choices, summary, picture, num
     const [success, setSuccess] = useState(null)
     const [isDisabled, setIsDisabled] = useState(false)
 
+    const [selected, setSelected] = useState('')
+
+
+    const chosenAnswer = (choice) => {
+
+        if(selected === '') {
+          setSelected(choice)
+        }
+        else if(selected === choice) {
+
+          setSelected('')
+        }
+
+        else if(selected) {
+
+       
+
+          setSelected(choice)
+
+        }
+
+    }
+   
+
     const scoreFunction = (choice) => {
      // e.preventDefault()
      setGetClicks(getClicks + 1)
@@ -85,8 +109,8 @@ const GeneratedQuizCard = ({id, question, answer, choices, summary, picture, num
     
     onClick={() => setClicked(!clicked)}
     elevation={10}
-      sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
-      style = {{ height: '400px',cursor:'pointer'}}
+      sx={{height: '460px', cursor:'pointer', display: 'flex', flexDirection: 'column', borderRadius: '10px', position: 'relative' }}
+     
       
     >
 
@@ -97,27 +121,46 @@ const GeneratedQuizCard = ({id, question, answer, choices, summary, picture, num
 
   
      <Container style = {{paddingBottom: '10px', display: 'flex', justifyContent: 'space-between'}}>
-     <Typography>{number}</Typography>
-            <img
+     <Typography fontWeight={'bold'}>{number}.</Typography>
+     {image && <img
             
             src={image}
             width = '30px'
-            />
+            /> }
+
+         
+
+            
+
+      {picture && <img
+            
+            src={picture}
+            width = '30px'
+            />}
+            
             
 
 </Container>
             
         
-        <Typography gutterBottom paddingBottom = '5px' variant="body1" component="h4" align='center' justifyContent = 'center' style={{color: '#5885AF'}}>{question}</Typography>
+        <Typography fontSize = '18px' gutterBottom fontWeight={'bold'} paddingBottom = '5px'  component="h4" align='center' justifyContent = 'center' style={{color: '#5885AF'}}>{question}</Typography>
         
-        <Typography  color= 'text.secondary' variant='body2'>
+        
         { choices.map((choice, i) => (
-           <Box className = 'clicked' style = {{padding: '5px'}}  onClick = {() => scoreFunction(choice) } key={i} m = {1}> {String.fromCharCode(i + 65)}) {choice.length > 0 && choice} </Box>
+           <Box className = 'clicked' style = {{padding: '5px', backgroundColor: selected === choice && '#FFB6C1' }}  onClick = {() => chosenAnswer(choice) } key={i} m = {1}> <Typography fontSize={'18px'}>{String.fromCharCode(i + 65)}) {choice.length > 0 && choice}</Typography> </Box>
          ))
 
         }
        
-        </Typography>
+        
+
+        <Box sx = {{position: 'absolute',bottom: 0, right: 0, padding: '0 10px 10px 0'}}>
+
+        <Button disabled = {!selected} onClick = {() => scoreFunction(selected)} variant='contained'>Check</Button>
+
+        </Box>
+
+        
       </CardContent>
      
      
@@ -131,8 +174,8 @@ const GeneratedQuizCard = ({id, question, answer, choices, summary, picture, num
     
 
 elevation={10}
-  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px', backgroundColor: '#ff8886' }}
-  style = {{height: '400px', cursor:'pointer'}}
+  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+  style = {{height: '460px', cursor:'pointer'}}
   
 >
   
@@ -140,25 +183,36 @@ elevation={10}
  <CardContent sx={{ flexGrow: 1 }}>
 
  <Container style = {{paddingBottom: '10px', display: 'flex', justifyContent: 'space-between'}}>
-     <Typography>{number}</Typography>
-            <img
+     <Typography>{number}.</Typography>
+     <Clear sx = {{color: 'red'}}/>
+     {image && <img
             
             src={image}
             width = '30px'
-            />
+            /> }
+
+         
+
+            
+
+      {picture && <img
+            
+            src={picture}
+            width = '30px'
+            />}
             
 
 </Container>
     
-    <Typography gutterBottom paddingBottom = '5px' variant="body1" component="h4" align='center' justifyContent = 'center' style={{color: 'black'}}>Answer: {answer}</Typography>
+<Typography fontWeight={'bold'} gutterBottom paddingBottom = '5px' variant="body1" component="h4" align='center' fontSize = '18px' justifyContent = 'center' style={{color: '#5885AF'}}>Answer: {answer}</Typography>
     
-    <Typography align = 'center'  color= 'black' variant='body2'>
+   
     {summary.map((sum, i) => (
-      <Box key={i} m = {1}> {sum}</Box>
+      <Box key={i} m = {1}><Typography align='center' fontSize={'18px'}>{sum}</Typography> </Box>
       ))}
     
    
-    </Typography>
+    
   </CardContent>
  
  
@@ -172,8 +226,8 @@ elevation={10}
     
 
 elevation={10}
-  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px', backgroundColor: '#cefad0' }}
-  style = {{height: '400px', cursor:'pointer'}}
+  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+  style = {{height: '460px', cursor:'pointer'}}
   
 >
 
@@ -181,24 +235,36 @@ elevation={10}
  <CardContent sx={{ flexGrow: 1 }}>
 
   <Container style = {{paddingBottom: '10px', display: 'flex', justifyContent: 'space-between'}}>
-     <Typography>{number}</Typography>
-            <img
+     <Typography fontWeight={'bold'}>{number}.</Typography>
+
+     <Check sx = {{color: 'green'}}/>
+     {image && <img
             
             src={image}
             width = '30px'
-            />
+            /> }
+
+         
+
+            
+
+      {picture && <img
+            
+            src={picture}
+            width = '30px'
+            />}
             
 
 </Container>
     
-    <Typography gutterBottom paddingBottom = '5px' variant="body1" component="h4" align='center' justifyContent = 'center' style={{color: 'black'}}>Answer: {answer}</Typography>
+    <Typography fontWeight={'bold'} gutterBottom paddingBottom = '5px' variant="body1" component="h4" align='center' fontSize = '18px' justifyContent = 'center' style={{color: '#5885AF'}}>Answer: {answer}</Typography>
     
-    <Typography  color= 'black' variant='body2' align='center'>
+
     {summary.map((sum,i) => (
-      <Box key={i} m = {1}> {sum}</Box>
+      <Box key={i} m = {1}> <Typography align = 'center' fontSize={'18px'}>{sum}</Typography></Box>
     ))}
    
-    </Typography>
+
   </CardContent>
  
  

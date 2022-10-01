@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Container, CssBaseline, Grid, Stack } from '@mui/material'
+import { Avatar, Button, Card, CircularProgress, Container, CssBaseline, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Stack } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import QuizSelectionCard from './QuizSelectionCard'
 import CardContent from '@mui/material/CardContent';
@@ -17,9 +17,8 @@ import {collection, doc, getDoc, getDocs, query, setDoc} from 'firebase/firestor
 import { db, storage } from '../firebase';
 import { ref } from 'firebase/storage'
 import QuizGeneratorCard from './QuizGeneratorCard';
-import { Lock } from '@mui/icons-material';
+import { AccountCircle, Home, Lock } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import LogoutIcon from '@mui/icons-material/Logout';
 
 
 
@@ -54,7 +53,7 @@ const QuizSelection = () => {
     getDoc(videoRef)
     .then((docu) => {
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         setNoVideoAuth(true)
       }
  
@@ -64,7 +63,7 @@ const QuizSelection = () => {
     getDoc(bundleRef)
     .then((docu) => {
   
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         
         setNoBundleAuth(true)
        
@@ -75,9 +74,9 @@ const QuizSelection = () => {
     getDoc(quizRef)
     .then((docu) => {
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         setNoQuizAuth(true)
-        if(noQuizAuth && noBundleAuth) {
+        if(noBundleAuth ) {
           navigate('/dashboard')
         }
         
@@ -108,21 +107,13 @@ const QuizSelection = () => {
     
 
 
-    const logout = async() => {
-      const docRef = await doc(db, "Users1", auth.currentUser.uid);
-      var answer = window.confirm(`Are you sure you want to sign out?`);
-      if (answer) {
-
-        await signOut(auth)
-       
-      }
-      
-     
-    }
+    
 
     useEffect(() => {
 
       const getDocuments = async() => {
+
+        
 
         const docs = query(collection(db, 'Quizzes'))
         const snapshot = await getDocs(docs)
@@ -148,7 +139,6 @@ const QuizSelection = () => {
 
     }, [])
 
-    
 
    
 
@@ -161,7 +151,7 @@ const QuizSelection = () => {
 
       <Box
           sx={{
-            bgcolor: 'background.paper',
+            
             pt: 8,
             pb: 6,
             
@@ -172,22 +162,35 @@ const QuizSelection = () => {
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px 10px', borderRadius: '10px'}}>
-          <HomeIcon onClick = {() => navigate('/dashboard')}/>
+          <Box display={'flex'} justifyContent = 'flex-end' padding={'0 10px'}>
+              <IconButton>
+
+              <Home  onClick = {() => navigate('/dashboard')}/>
+
+              </IconButton>
+              <IconButton>
+
+          <AccountCircle onClick = {() => navigate('/accountpage')}/>
+
+              </IconButton>
+            
+
+            </Box>
             <Typography
               component="h1"
               variant="h2"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
-                Written
+                Written Exam Practice
             </Typography>
             <Typography variant="h5" align="center" color="text.secondary" paragraph>
 
-           Interactive Study guides for each section and a mock exam section to further prepare you!
-
+Study the sections according to your state board!
              
             </Typography>
             <Stack
@@ -197,9 +200,9 @@ const QuizSelection = () => {
               justifyContent="center"
             >
 
-              <Button color='secondary' disabled = {noQuizAuth && noBundleAuth} onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
-              <Button disabled = {noVideoAuth && noBundleAuth} onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>
-              <Button   variant="contained"><LogoutIcon onClick={logout}/></Button>
+              <Button  color='secondary'  onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
+              <Button  onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>
+              
               
               
               
@@ -217,10 +220,12 @@ const QuizSelection = () => {
 
 
 
- <Container sx={{ py: 8 }} maxWidth="md">
+ <Container  maxWidth="lg">
 
+ 
 
     <Grid container spacing={4}>
+   
       <QuizGeneratorCard card = 'Mock Exam'/>
     {quizzes.map((card, i) => (
 

@@ -1,4 +1,4 @@
-import { Button, Card, Container, Grid, Stack } from '@mui/material'
+import { Button, Card, Container, FormControl, Grid, IconButton, InputLabel, MenuItem, Modal, Select, Stack, styled } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import QuizSelectionCard from './QuizSelectionCard'
 import CardContent from '@mui/material/CardContent';
@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 import {gridStyle, cardStyle} from './QuizSelectionCss'
 import { Box } from '@mui/system';
-import { Grid4x4Outlined } from '@mui/icons-material';
+import { AccountCircle, Grid4x4Outlined, Home } from '@mui/icons-material';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -122,7 +122,7 @@ const QuizSelection = () => {
     getDoc(videoRef)
     .then((docu) => {
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         setNoVideoAuth(true)
       }
      
@@ -142,7 +142,7 @@ const QuizSelection = () => {
     getDoc(quizRef)
     .then((docu) => {
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         setNoQuizAuth(true)
       }
     
@@ -232,15 +232,9 @@ const QuizSelection = () => {
 
 
     const logout = async() => {
-      const docRef = await doc(db, "Users1", auth?.currentUser?.uid);
-      var answer = window.confirm(`Are you sure you want to sign out?`);
-       if (answer) {
-        await signOut(auth)
-       
-        
-       }
+     
+        await signOut(auth) 
 
-       
       
     }
 
@@ -313,20 +307,24 @@ const QuizSelection = () => {
 
 }
 
+// Add sign out Modal
+
+
+
+
   
   
    
 
   return (
 
-    <Grid style = {{height: '100vh'}}>
-
-      
+    <Grid >
+     
       {/*  */}
 
 <Box
           sx={{
-            bgcolor: 'background.paper',
+         
             pt: 8,
             pb: 6,
             
@@ -337,8 +335,26 @@ const QuizSelection = () => {
 
 
 
-          <Container maxWidth="md">
-          <Card elevation={10} style = {{padding: '40px 0', borderRadius: '10px'}}>
+
+          <Container maxWidth="lg">
+          <Card elevation={10} style = {{padding: '40px 10px', borderRadius: '10px'}}>
+
+            <Box display={'flex'} justifyContent = 'flex-end' padding={'0 10px'}>
+              <IconButton>
+
+              <Home  onClick = {() => navigate('/dashboard')}/>
+
+              </IconButton>
+              <IconButton>
+
+          <AccountCircle onClick = {() => navigate('/accountpage')}/>
+
+              </IconButton>
+            
+
+            </Box>
+
+         
 
            
             <Typography
@@ -347,13 +363,14 @@ const QuizSelection = () => {
               align="center"
               justifyContent= 'center'
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                 Dashboard
             </Typography>
-            <Typography variant="h5" align="center" color="text.secondary" paragraph>
+            <Typography variant="h5" align="center" color="text.secondary" fontWeight='500' paragraph>
 
-            Signed in as: {auth?.currentUser?.email}
+           Welcome to Barber Mastery. To get started, click on your desired section of study down below!
 
              
             </Typography>
@@ -367,7 +384,7 @@ const QuizSelection = () => {
 
 <Button hidden = {!adminUser}  onClick={() => navigate('/admin')} variant="outlined">Admin</Button>
               
-              <Button onClick={logout} variant="contained"><LogoutIcon/></Button>
+             
               
               
               
@@ -381,28 +398,16 @@ const QuizSelection = () => {
       {/*  */}
       
 
-      
-
-{/* new grid system */}
 
 
-
-
-
-
-  {/* new */}
-
-  {/* {(noBundleAuth && noVideoAuth && noQuizAuth) &&
-  'Loading'
-  } */}
-
-  {/*  */}
-
-
- {!isLoading && <Container sx={{ py: 8 }} maxWidth="md">
+ {!isLoading &&
+ 
+ <Container sx={{ py: 4 }} maxWidth="lg">
 
     
     <Grid container spacing={4}>
+    
+
 
   
      
@@ -411,24 +416,24 @@ const QuizSelection = () => {
                key={''}
                 elevation={10}
                   sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+                  onClick={() => navigate('/quizselection')}
                 >
 
 <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '40px'}}
         image={quizImage}
         
         
       />
                   
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2" align='center'>
-                    <Button hidden = {noQuizAuth && noBundleAuth} onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
+                  <CardContent sx={{ flexGrow: 1 }} >
+                  <Typography gutterBottom variant="h4"  fontWeight='bold' component="h2" align='center'>
+                     Written Exam Practice
                     </Typography>
 
                   
-                    {(noQuizAuth && noBundleAuth) && <Typography align='center'><CardElement/><Button onClick={handleSignUp} style = {{marginTop: '20px'}} variant='outlined'>{ `Purchase Written: $${((price/100).toFixed(2))}`}</Button></Typography>}
 
                    
                    
@@ -438,34 +443,25 @@ const QuizSelection = () => {
   </Grid>
 <Grid item key={''} xs={12} sm={6} md={6}>
                 <Card
-
                key={''}
-                
-                
+                onClick = {() => navigate('/videoselection')}
                 elevation={10}
-                  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+                  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px', "&:hover": { cursor: 'pointer' } }}
                 >
 
 <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '40px'}}
         image={videoImage}
         
         
       />
                   
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2" align='center' >
-                      <Button hidden = {noVideoAuth && noBundleAuth} onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>
+                  <Typography gutterBottom variant="h4"  fontWeight='bold' component="h2" align='center'>
+                     Practical Exam Practice
                     </Typography>
-
-                    
-
-                    {(noVideoAuth && noBundleAuth) && <Typography align='center'><CardElement/><Button onClick={handleSignUp} style = {{marginTop: '20px'}} variant='outlined'>Purchase Practical:  ${((price/100).toFixed(2))}</Button></Typography>}
-
-
-                   
 
                    
                   </CardContent>
@@ -478,7 +474,7 @@ const QuizSelection = () => {
 
   {isLoading &&
   
-  <Container maxWidth = 'sm'>
+  <Container maxWidth = 'lg'>
 
 
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { cardStyle } from './QuizSelectionCss'
-import { CardActionArea, CardContent, Typography, Card, Grid, CardMedia } from '@mui/material'
+import { CardActionArea, CardContent, Typography, Card, Grid, CardMedia, CircularProgress } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { getDownloadURL, ref } from 'firebase/storage'
 import { storage } from '../firebase'
@@ -37,20 +37,22 @@ const QuizSelectionCard = ({card, number}) => {
                 
                 onClick={() => navigate(`/quiz/${card}`)}
                 elevation={10}
-                  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+                  sx={{ height: '300px', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
                 >
+                  
 
 <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '40px'}}
         image={image}
         
         
       />
+
                   
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2" align='center'>
+                    <Typography gutterBottom variant="h5" fontWeight='bold' component="h2" align='center'>
                       {card}
                     </Typography>
                    

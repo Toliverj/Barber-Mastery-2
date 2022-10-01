@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react'
 import { cardStyle } from './QuizSelectionCss'
-import { CardActionArea, CardContent, Typography, Card, CardMedia, Grid, Container, IconButton, Button } from '@mui/material'
+import { CardActionArea, CardContent, Typography, Card, CardMedia, Grid, Container, IconButton, Button, Checkbox } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { Box } from '@mui/system'
-import { Delete, Edit } from '@mui/icons-material'
+import { Bookmark, BookmarkBorder, Delete, Edit } from '@mui/icons-material'
 import { arrayRemove } from 'firebase/firestore'
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import { useSpeechSynthesis } from 'react-speech-kit'
@@ -20,39 +20,32 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
     const {speak, voices} = useSpeechSynthesis()
 
 
-    useEffect(() => {
-        console.log(voices)
-    },[])
+    
     
 
 
   
 
-   
+   console.log(question.replace('_', ',what'))
   
 
     const useVoice = () => {
   
       if(clicked == false) {
-        speak({text: question, voice: voices[18]})
+        speak({text: question.replace('_', 'blank,'), voice: voices[10]})
           
       }
 
       
     
       if(clicked == true) {
-        speak({text: `The answer is, ${answer}.`, voice: voices[18]})
-        speak({text: summary, voice: voices[18]})
+        speak({text: `The answer is, ${answer}.`, voice: voices[10]})
+        speak({text: summary, voice: voices[10]})
       }
       
     }
 
-   
-
-
-
-  
-
+    
  
 
   return (
@@ -66,7 +59,7 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
    
     elevation={10}
       sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      style = {{ height: '350px', cursor:'pointer', borderRadius: '10px'}}
+      style = {{ height: '450px', cursor:'pointer', borderRadius: '10px'}}
       className = 'flip'
     >
       
@@ -75,9 +68,11 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
       <Container>
 
 
+
+
   
       {/* {clicked == true && <RecordVoiceOverIcon style = {{color: '#bebebe', marginTop: '10px'}} onClick = {useVoice}/>} */}
-      {clicked == false &&  <RecordVoiceOverIcon style = {{color: '#bebebe', marginTop: '10px'}} onClick = {useVoice}/>}
+      {clicked == false && <Container style = {{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',  marginTop: '10px'}}> <Typography fontWeight='bold'>{number}.</Typography> <RecordVoiceOverIcon  onClick = {useVoice}/>  </Container>}
 
       </Container>
 
@@ -95,7 +90,7 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
   
         
         
-        {clicked == false && (<Typography gutterBottom  variant="body1" component="h4" align='center' justifyContent = 'center' style={{color: '#5885AF', display: 'grid', placeItems: 'center', height: '100%'}}>{question}</Typography>) }
+        {clicked == false && (<Typography fontSize = '18px' gutterBottom  variant="body1" component="h4" align='center' fontWeight='bold' justifyContent = 'center' style={{color: '#5885AF', display: 'grid', placeItems: 'center', height: '100%'}}>{question}</Typography>) }
         
         
        
@@ -106,7 +101,7 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
    
     elevation={10}
       sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      style = {{ height: '350px', cursor:'pointer', borderRadius: '10px'}}
+      style = {{ height: '450px', cursor:'pointer', borderRadius: '10px'}}
       className = 'flip'
     >
       
@@ -118,7 +113,7 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
 
 
   
-      {clicked == true && <RecordVoiceOverIcon style = {{color: '#bebebe', marginTop: '10px'}} onClick = {useVoice}/>}
+      {clicked == true && <Container style = {{display: 'flex', alignItems: 'center', justifyContent: 'space-between',  marginTop: '10px'}}> <Typography fontWeight={'bold'}>{number}.</Typography> <RecordVoiceOverIcon  onClick = {useVoice}/>  </Container>}
       {/* {clicked == false &&  <RecordVoiceOverIcon style = {{color: '#bebebe', marginTop: '10px'}} onClick = {useVoice}/>} */}
 
       </Container>
@@ -138,19 +133,21 @@ const QuizCard = ({question, answer, choices, summary, number, admin, image}) =>
      
   
         
+
+        {clicked == true &&  (<><Typography fontSize={'20px'}  gutterBottom fontWeight='bold' paddingBottom = '5px' variant="body1" component="h4" align='center' justifyContent = 'center'><span style={{color: '#76B947'}}>Answer: </span>{answer}</Typography></>)}
         
-        {clicked == true &&  (<><Typography  gutterBottom paddingBottom = '5px' variant="body1" component="h4" align='center' justifyContent = 'center'><span style={{color: '#76B947'}}>Answer: </span>{answer}</Typography></>)}
         
         
-        <Typography color= 'text.secondary' variant='body2' align='center'>
 
         {clicked == true && 
         (summary.map((ans, i) => (
-          <Box key={i} m = {1}> {ans}</Box>
+          <Box key={i} m = {1}> <Typography align='center' fontSize={'18px'}>{ans}</Typography></Box>
         )))
         }
 
-        </Typography>
+        
+
+        
        
       </CardContent>
     </Card>

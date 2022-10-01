@@ -16,7 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {useEffect, useState} from 'react'
 import { collection, doc, getDoc, increment, onSnapshot, query, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { Card, CardContent, CardHeader, Container, IconButton } from '@mui/material';
+import { Card, CardContent, CardHeader, CircularProgress, Container, IconButton } from '@mui/material';
 import StarIcon from '@mui/icons-material/StarBorder';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import axios from 'axios';
@@ -74,7 +74,7 @@ const [updatedUsers, setUpdateUsers] = useState(0)
         const docRef = await doc(db, "Users1", auth?.currentUser?.uid);
         //localStorage.setItem('aUser', auth)
 
-        if(!(signInEmail === 'admin@admin.com')) {
+        if(!(signInEmail === 'admin@admin.com') && !(signInEmail === 'test@test.com')) {
           
 
         if (!localStorage.getItem('uid')) {
@@ -125,6 +125,7 @@ const [updatedUsers, setUpdateUsers] = useState(0)
     catch(error) {
         console.log(error)
         setLoginError(error.message)
+        setIsLoading(false)
     }
     
   }
@@ -154,6 +155,20 @@ const [updatedUsers, setUpdateUsers] = useState(0)
     }
 
     monitorAuthState()
+
+  }, [])
+
+  useEffect(() => {
+
+    const email = localStorage.getItem('email')
+    const password = localStorage.getItem('password')
+
+    if (email && password) {
+
+    setSignInEmail(email)
+    setSignInPassword(password)
+
+    }
 
   }, [])
 
@@ -279,7 +294,6 @@ const [updatedUsers, setUpdateUsers] = useState(0)
                 autoComplete="email"
                 autoFocus
                 value={signInEmail}
-                placeholder = {getEmail}
                 onChange = {(e) => setSignInEmail(e.target.value)}
                 
               />
@@ -293,11 +307,10 @@ const [updatedUsers, setUpdateUsers] = useState(0)
                 id="password"
                 autoComplete="current-password"
                 value={signInPassword}
-                placeholder = {getPassword}
                 onChange = {(e) => setSignInPassword(e.target.value)}
               />
         
-              
+              {!isLoading && 
               <Button
                 fullWidth
                 variant="contained"
@@ -307,6 +320,18 @@ const [updatedUsers, setUpdateUsers] = useState(0)
               >
                 Sign In
               </Button>
+                  }
+              {isLoading && 
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+               
+                disabled
+              >
+                <CircularProgress/>
+              </Button>
+                  }
               <Grid item xs>
                   <Button disabled = {!signInEmail.length} variant = 'text' href="#" onClick={forgotPassword}>
                     Forgot password?
@@ -315,7 +340,6 @@ const [updatedUsers, setUpdateUsers] = useState(0)
               
             </Box>
             <div style={{color: 'red'}}>{loginError}</div>
-            {isLoading && <div>Please Wait...</div>}
           </Box>
           
           

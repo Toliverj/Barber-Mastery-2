@@ -1,4 +1,4 @@
-import { AppBar, Button, Container, Fab, Grid, IconButton, Stack, styled, Toolbar } from '@mui/material'
+import { AppBar, Button, CircularProgress, Container, Fab, Grid, IconButton, Stack, styled, Toolbar } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -18,10 +18,10 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {ref, getDownloadURL} from 'firebase/storage'
 import {storage} from '../firebase'
 import GeneratedQuizCard from './GeneratedQuizCard';
-import { AccessTime, Lock, LockClock, Menu, PunchClock } from '@mui/icons-material';
+import { AccessTime, AccountCircle, Home, Lock, LockClock, Menu, PunchClock } from '@mui/icons-material';
 import { ClockPicker } from '@mui/lab';
 import '../App.css'
-import Logout from '@mui/icons-material/Logout';
+
 
 function Copyright(props) {
   return (
@@ -174,16 +174,22 @@ const QuizGenerator = () => {
           const docs = query(collection(db, 'Quizzes'))
           const snapshot = await getDocs(docs)
           const tempArr = []
-          
         
+
+          console.log(getQuizzes.length, 'length')
 
   
           snapshot.forEach((doc) => {
+
+            
             
 
             doc.data().Questions.map((question) => {
               
               if (getQuizzes.includes(doc.id)) 
+              
+
+              
              
              
               tempArr.push({idp: doc.id ,Question: question.Question, Answer: question.Answer.Answer, Choices: shuffleArray(question.Choices), Summary: question.Answer.Summary
@@ -197,12 +203,25 @@ const QuizGenerator = () => {
 
             questionsArr.current = shuffleArray(tempArr)
 
-           newInfo.current = questionsArr.current.slice(0,50)
+            if(getQuizzes.length === 1) {
+              newInfo.current = questionsArr.current.slice(0,20)
+              setTimer(30)
+            }
+            else if(getQuizzes.length >= 3) {
+              newInfo.current = questionsArr.current.slice(0,85)
+              setTimer(85)
+            }
+            else{
+              newInfo.current = questionsArr.current.slice(0,50)
+              setTimer(60)
+            }
 
+          
             
 
             
           })
+
 
           
   
@@ -217,27 +236,54 @@ const QuizGenerator = () => {
 
       
 
-    const handleLogout = async() => {
-      
-      const docRef = await doc(db, "Users1", auth?.currentUser?.uid);
-      var answer = window.confirm(`Are you sure you want to sign out?`);
-       if (answer) {
 
-        await signOut(auth)
-        
-       }
-      
-    }
 
     // timer
 
-    let [timer, setTimer] = useState(85)
+    let [timer, setTimer] = useState(null)
+    
+    useEffect(() => {
+
+      if (timer === 0) {
+
+        setFinish(true)
+        if(getQuizzes.length === 1) {
+    
+           const prevScore = localStorage.getItem(getQuizzes[0])
+    
+           console.log(localStorage.getItem(getQuizzes))
+           
+    
+           if(prevScore > 0) {
+    
+            
+    
+            console.log( (parseInt(prevScore) + Math.round((getScore/newInfo.current.length) * 100)) / 2)
+            localStorage.setItem( getQuizzes,(parseInt(prevScore) + Math.round((getScore/newInfo.current.length) * 100)) / 2)
+           }
+           else {
+    
+            //console.log(parseInt(prevScore) + Math.round((getScore/newInfo.current.length) * 100)) 
+    
+            //console.log(Math.round((getScore/newInfo.current.length) * 100))        
+            localStorage.setItem( getQuizzes, Number(Math.round((getScore/newInfo.current.length) * 100)))        
+    
+           }
+           
+    
+    
+        }
+
+      }
+
+    },[timer])
 
     useEffect(() => {
         const interval = setInterval(() => {
           if(timer >= 0) {
             setTimer(timer--)
           }
+          
         }, 30000)
 
         return () => {
@@ -258,8 +304,36 @@ const QuizGenerator = () => {
     });
 
    
+//////////////////////////////////////
+   const finishExam = () => {
+    setFinish(true)
+    if(getQuizzes.length === 1) {
 
-   
+       const prevScore = localStorage.getItem(getQuizzes[0])
+
+       console.log(localStorage.getItem(getQuizzes))
+       
+
+       if(prevScore > 0) {
+
+        
+
+        console.log( (parseInt(prevScore) + Math.round((getScore/newInfo.current.length) * 100)) / 2)
+        localStorage.setItem( getQuizzes,(parseInt(prevScore) + Math.round((getScore/newInfo.current.length) * 100)) / 2)
+       }
+       else {
+
+        //console.log(parseInt(prevScore) + Math.round((getScore/newInfo.current.length) * 100)) 
+
+        //console.log(Math.round((getScore/newInfo.current.length) * 100))        
+        localStorage.setItem( getQuizzes, Number(Math.round((getScore/newInfo.current.length) * 100)))        
+
+       }
+       
+
+
+    }
+   }
 
    
 
@@ -269,21 +343,33 @@ const QuizGenerator = () => {
 
 <Box
           sx={{
-            bgcolor: 'background.paper',
             pt: 8,
             pb: 6,
           }}
         >
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '20px', borderRadius: '10px'}}>
-          <HomeIcon onClick = {() => navigate('/dashboard')}/>
+          <Box display={'flex'} justifyContent = 'flex-end' padding={'0 10px'}>
+              <IconButton>
+
+              <Home  onClick = {() => navigate('/dashboard')}/>
+
+              </IconButton>
+              <IconButton>
+
+          <AccountCircle onClick = {() => navigate('/accountpage')}/>
+
+              </IconButton>
+            
+
+            </Box>
 
           <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '40px'}}
         image={image}       
       />
 
@@ -292,6 +378,7 @@ const QuizGenerator = () => {
               variant="h4"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
             Mock Exam
@@ -300,9 +387,7 @@ const QuizGenerator = () => {
            
 
 
-            <Typography variant="h5" align="center" color="text.secondary" paragraph>
-             This section is to break you away from seeing the flashcards in the same order. Which gives you a more test like feeling for what the exam will be like
-            </Typography>
+           
             <Stack
               sx={{ pt: 4 }}
               direction="row"
@@ -310,7 +395,7 @@ const QuizGenerator = () => {
               justifyContent="center"
             >
               <Button onClick={() => navigate('/selectquiz')} variant="outlined">Go Back</Button>
-              <Button onClick={handleLogout} variant="contained"><Logout/></Button>
+              
               
             </Stack>
             </Card>
@@ -344,7 +429,7 @@ elevation={10}
 
   <Typography paddingTop={7}  align='center' color = 'text.secondary'>
 
-  <Lock sx={{fontSize:'80px'}} />
+  <CircularProgress sx={{fontSize:'80px'}} />
   
   </Typography>
 
@@ -369,7 +454,7 @@ elevation={10}
 
 }
 
-{(timer != 0 && !finish) && <Container sx={{ py: 8 }} maxWidth="md">
+{(timer != 0 && !finish) && <Container sx={{ py: 8 }} maxWidth="lg">
  
   <Container style = {{display: 'flex', justifyContent: 'flex-end'}}>
 
@@ -396,7 +481,7 @@ elevation={10}
 ))}
 <Container  style = {{marginTop: '20px', display: 'flex', justifyContent: 'flex-end'}}>
 
-<Button onClick = {() => setFinish(true)} variant = 'contained' disabled = {getClicks < newInfo.current.length}>Finish</Button>
+<Button onClick = {finishExam} variant = 'contained' disabled = {getClicks < newInfo.current.length}>Finish</Button>
 </Container>
     </Grid>
   </Container>
@@ -405,7 +490,7 @@ elevation={10}
 
 {/* Old grid system */}
    
-{ finish &&
+{ (finish || timer === 0) &&
 
 <Container maxWidth = 'sm'>
 
@@ -415,7 +500,7 @@ elevation={10}
     
 
 elevation={10}
-  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+  sx={{ display: 'flex', flexDirection: 'column', borderRadius: '10px', marginBottom: '20px' }}
   style = {{height: '300px', cursor:'pointer'}}
   
 >

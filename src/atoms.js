@@ -19,3 +19,4 @@ export const authUser = atom({
     key: 'authUser',
     default: ''
 })
+

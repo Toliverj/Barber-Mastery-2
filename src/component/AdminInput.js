@@ -9,6 +9,7 @@ import { auth, db } from '../firebase'
 import QuizGeneratorCard from './QuizGeneratorCard'
 import QuizSelectionCard from './QuizSelectionCard'
 import HomeIcon from '@mui/icons-material/Home';
+import { Logout } from '@mui/icons-material'
 
 const AdminInput = () => {
 
@@ -55,8 +56,7 @@ const AdminInput = () => {
 
       getDoc(adminRef)
       .then((docu) => {
-        console.log(auth.currentUser.uid, 'current user')
-        console.log(docu.data().id, 'admin field')
+
 
         if(auth.currentUser.uid !== docu.data().id)
         {
@@ -69,26 +69,59 @@ const AdminInput = () => {
 
     const docRef = doc(db, "Quizzes", id);
 
+
+  
+
+if(choice3 === '' && choice4 === '')
+{
+
+  await updateDoc(docRef, {
+
+    Questions: arrayUnion({
+      Question: question,
+      Choices: [choice1,choice2],
+      Answer: {
+        Answer: answer,
+        Summary: [summary1, summary2, summary3]
+      }
+    })
+  
+  
+  
+   
+  });
+
+}
+
+else
+{
+
 await updateDoc(docRef, {
 
-  Questions: arrayUnion({
-    Question: question,
-    Choices: [choice1,choice2,choice3,choice4],
-    Answer: {
-      Answer: answer,
-      Summary: [summary1, summary2, summary3]
-    }
-  })
+
+Questions: arrayUnion({
+Question: question,
+Choices: [choice1,choice2,choice3,choice4],
+Answer: {
+  Answer: answer,
+  Summary: [summary1, summary2, summary3]
+}
+})
 
 
- 
+
+
 });
+
+}
   
       
 
 console.log('Successful')
 setQuestion('')
 setAnswer('')
+
+
 setChoice1('')
 setChoice2('')
 setChoice3('')
@@ -251,7 +284,7 @@ setSummary3('')
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
           <HomeIcon onClick = {() => navigate('/dashboard')}/>
             <Typography
@@ -259,11 +292,12 @@ setSummary3('')
               variant="h2"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                 Edit 
             </Typography>
-            <Typography variant="h5" align="center" color="text.secondary" paragraph>
+            <Typography variant="h5" align="center" fontWeight='bold' color="text.secondary" paragraph>
 
            {id}
 
@@ -278,7 +312,7 @@ setSummary3('')
 
               <Button  disabled = {noQuizAuth && noBundleAuth} onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
               <Button disabled = {noVideoAuth && noBundleAuth} onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>
-              <Button onClick={logout} variant="contained">Sign Out</Button>
+              <Button onClick={logout} variant="contained"><Logout/></Button>
               
               
               
@@ -309,7 +343,7 @@ setSummary3('')
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
           
             <Typography
@@ -317,6 +351,7 @@ setSummary3('')
               variant="h4"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                 Question & Answer 
@@ -380,7 +415,7 @@ setSummary3('')
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
           
             <Typography
@@ -388,12 +423,13 @@ setSummary3('')
               variant="h4"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                 Answer Choices
             </Typography>
 
-              <Typography variant="h6" align="center" color="text.secondary" paragraph>
+              <Typography variant="h6" align="center" color="text.secondary" fontWeight='bold' paragraph>
 
                   Copy the answer from above & paste it in a random choice box
 
@@ -468,7 +504,7 @@ setSummary3('')
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
           
             <Typography
@@ -476,12 +512,13 @@ setSummary3('')
               variant="h4"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                 Summaries
             </Typography>
 
-              <Typography variant="h6" align="center" color="text.secondary" paragraph>
+              <Typography variant="h6" align="center" color="text.secondary" fontWeight='bold' paragraph>
 
                   Extra details about the answer
 
@@ -548,7 +585,7 @@ setSummary3('')
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           
           
            
@@ -561,7 +598,7 @@ setSummary3('')
               justifyContent="center"
             >
 
-<Button variant='outlined' onClick={addQuestion}>Add Question</Button>
+<Button variant='contained' onClick={addQuestion}>Add Question</Button>
 
               
             </Stack>

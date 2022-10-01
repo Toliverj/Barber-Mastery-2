@@ -12,18 +12,18 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 
 
-const PUBLIC_KEY = 'pk_test_51L2flsALU69ZaX0X7eFgDyTh3M0MZEsTh7P6Mh2Gh4w3pHv5rOhVll3246GmR7HKeGPfie4cLXtZuhPH2Myq08b600fnw4BChs'
+const PUBLIC_KEY = 'pk_live_51L2flsALU69ZaX0XllVABBBVTR6CfRL0KmmmtuaVHsxumNCKGv9Rjaheg9HONtPPrE9PrEMoousMnNhydRsZD9sp00Efub88az'
 const stripeTestPromise = loadStripe(PUBLIC_KEY)
 
 root.render(
 
-  <React.StrictMode>
+  
     <RecoilRoot>
     <Elements stripe={stripeTestPromise}>
     <App/>
     </Elements>
     </RecoilRoot>
-  </React.StrictMode>
+  
 );
 
 // If you want to start measuring performance in your app, pass a function

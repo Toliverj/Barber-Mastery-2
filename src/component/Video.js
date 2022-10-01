@@ -1,5 +1,5 @@
-import { Button, Container, Grid, Stack } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Button, Container, Grid, IconButton, List, ListItem, Stack } from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -12,11 +12,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import QuizCard from './QuizCard';
 import { useRecoilValue } from 'recoil';
 import { aUser } from '../atoms';
-import { collection, doc, getDoc, getDocFromCache, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocFromCache, getDocs, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { auth, db, storage } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { getDownloadURL,  ref } from 'firebase/storage';
-import LogoutIcon from '@mui/icons-material/Logout';
+import '../App.css'
+import { AccountCircle, Home } from '@mui/icons-material';
+import ReactPlayer from 'react-player';
 
 const Video = () => {
    
@@ -34,8 +36,31 @@ const Video = () => {
     const [noVideoAuth, setNoVideoAuth] = useState(false)
     const [noQuizAuth, setNoQuizAuth] = useState(false)
     const [noBundleAuth, setNoBundleAuth] = useState(false)
+    const [youtubeUrl, setYoutubeUrl] = useState('')
 
     const [arrCollection, setArrCollection] = useState([])
+    
+  
+
+    useEffect(() => {
+
+
+      console.log(id)
+
+     if(id === '1. Manicure') {
+        setYoutubeUrl('https://youtu.be/wr1qSmEDtf4?rel=0&modestbranding=1&showinfo=0&fs=0controls=1')
+     }
+     else if (id === '2. Professional Shave Service') {
+      setYoutubeUrl('https://youtu.be/zonk2Vh2sMI?rel=0&modestbranding=1&showinfo=0&fs=0')
+     }
+     else if (id === '3. Blood Exposure') {
+      setYoutubeUrl('https://youtu.be/9ZVRpmFzKYQ?rel=0&modestbranding=1&showinfo=0&fs=0')
+     }
+     else if (id === '4. Facial Service') {
+      setYoutubeUrl('https://youtu.be/xLu-IcFYB5Q?rel=0&modestbranding=1&showinfo=0&fs=0')
+     }
+
+    }, [])
 
     useEffect(() => {
 
@@ -43,67 +68,58 @@ const Video = () => {
       const bundleRef = doc(db, 'Users', 'Bundle Pack')
       const quizRef = doc(db, 'Users', 'Quiz Pack')
 
+
       
 
     getDoc(videoRef)
     .then((docu) => {
-      console.log(docu.data().id)
-      console.log(auth.currentUser.uid)
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
-        console.log('no video auth')
+
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
+
         setNoVideoAuth(true)
         if(noVideoAuth && noBundleAuth) {
           navigate('/dashboard')
         }
       }
-      else {
-        console.log('yes video auth')
-      }
+     
       
     })
 
     getDoc(bundleRef)
     .then((docu) => {
-      console.log(docu.data().id)
-      console.log(auth.currentUser.uid)
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
-        console.log('no bundle auth')
+
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
+
         setNoBundleAuth(true)
        
       }
-      else {
-        console.log('yes bundle auth')
-      }
+     
     })
 
     getDoc(quizRef)
     .then((docu) => {
-      console.log(docu.data().id)
-      console.log(auth.currentUser.uid)
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
-        console.log('no quiz auth')
+
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
+
         setNoQuizAuth(true)
        
         
       }
-      else {
-        console.log('yes quiz auth')
-      }
+    
 
     })
 
       const monitorAuthState = async() => {
         onAuthStateChanged(auth, user => {
           if (!user) {
-           // console.log(user.email, 'asd')
+  
             navigate('/')
           }
         })
 
-        console.log(id, 'asd;fj')
 
       }
 
@@ -112,38 +128,35 @@ const Video = () => {
     }, [noBundleAuth, noVideoAuth, noQuizAuth])
 
 
-    useEffect(() => {
-      const getVideo = async() => {
+    // useEffect(() => {
+    //   const getVideo = async() => {
 
-        getDownloadURL(ref(storage, `videos/${id}.mov`))
-        .then((url) => {
-            setVideoURL(url)
-            console.log(videoURL, 'urlrlrlrl')
-        }, [])
+    //     getDownloadURL(ref(storage, `videos/${id}.mov`))
+    //     .then((url) => {
+    //         setVideoURL(url)
+    //     }, [])
         
 
-      }
+    //   }
 
-      getVideo()
+    //   getVideo()
+    // }, [])
+
+    const videoData = useRef([])
+
+    useEffect(() => {
+
+      const unsub = onSnapshot(doc(db, "Video", id), (doc) => {
+        videoData.current = doc?.data()?.Info       
+      })
+
+      
+
     }, [])
 
     
 
-    const handleLogout = async() => {
-      const docRef = await doc(db, "Users1", auth?.currentUser?.uid);
-      var answer = window.confirm(`Are you sure you want to sign out?`);
-       if (answer) {
-
    
-        await signOut(auth)
-  
-        
-       }
-
-       
-      
-    }
-
     const [image, setImage] = useState('')
 
     useEffect(() => {
@@ -159,11 +172,14 @@ const Video = () => {
 
   return (
 
+    
+
     <Grid>
+
 
 <Box
           sx={{
-            bgcolor: 'background.paper',
+           
             pt: 8,
             pb: 6,
           }}
@@ -171,9 +187,22 @@ const Video = () => {
 
 
           
-          <Container maxWidth="md">
-          <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
-          <HomeIcon onClick = {() => navigate('/dashboard')}/>
+          <Container maxWidth="lg">
+          <Card elevation={10} style = {{padding: '40px 10px', borderRadius: '10px'}}>
+          <Box display={'flex'} justifyContent = 'flex-end' padding={'0 10px'}>
+              <IconButton>
+
+              <Home  onClick = {() => navigate('/dashboard')}/>
+
+              </IconButton>
+              <IconButton>
+
+          <AccountCircle onClick = {() => navigate('/accountpage')}/>
+
+              </IconButton>
+            
+
+            </Box>
           <CardMedia
         component="img"
         height="140"
@@ -182,9 +211,10 @@ const Video = () => {
       />
             <Typography
               component="h1"
-              variant="h2"
+              variant="h3"
               align="center"
               color="text.primary"
+              fontWeight={'bold'}
               gutterBottom
             >
                {id}
@@ -196,14 +226,14 @@ const Video = () => {
               spacing={2}
               justifyContent="center"
             >
-              <Button onClick={() => navigate('/videoselection')} variant="outlined">Go Back</Button>
-              <Button onClick={handleLogout} variant="contained"><LogoutIcon/></Button>
-              
+              <Button onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
+              <Button   onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>              
             </Stack>
             </Card>
           </Container>
           
         </Box>
+
 
 
 
@@ -219,22 +249,69 @@ const Video = () => {
  
 >
 
+  <Grid item xs = {12}>
+
+
+    
+
+  {youtubeUrl ? ( 
+
+<div className='video'>
+
+<ReactPlayer  width={'100%'} height = {'500px'} controls url={youtubeUrl}/>
+
+
+</div>
+
+
+
+
+  
+    ) : (<h2>No video at the moment...</h2>)}
+
+  </Grid>
+
   <Grid item xs={3} sm = {6} md = {12}>
 
-  {videoURL ? ( <video
-    width={'800px'}
-    preload
-    controls
-        src={videoURL}
-    />) : (<h2>No video at the moment...</h2>)}
+  
    
-  </Grid>   
-   
+  </Grid>
+  
 </Grid> 
+
+<Box
+          sx={{
+            
+            pt: 8,
+            pb: 6,
+          }}
+        >
+
+
+          
+          <Container maxWidth="lg">
+          <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
+          <Typography variant = 'h4'  fontWeight={900}> {id} ({videoData?.current.Time} min)</Typography>
+
+         
+          <List >
+
+{videoData?.current.Steps && videoData?.current.Steps.map((data, i) => (
+  <ListItem><Typography color = 'text.secondary' variant = 'h6'>{i + 1}. {data}</Typography> </ListItem>
+))}
+ 
+  
+</List>
+            
+
+            </Card>
+          </Container>
+          
+        </Box>
 
 
        
-{/* Old grid system */}
+
    
 
 

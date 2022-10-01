@@ -13,16 +13,44 @@
 }
 
 .clicked:hover{
-  background-color: #D3D3D3;
+  background-color: lightgray;
 }
 
 .selected {
 background-color: green;
 }
 
-.flip {
-  
+@media screen and (min-width: 400px) {
+  .video {
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
+@media screen and (min-width: 1100px) {
+  .video {
+    width: 1100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+@media screen and (min-width: 300px) {
+  .demoVideo {
+    width: 420px;
+    
+  }
+}
+@media screen and (min-width: 1100px) {
+  .demoVideo {
+    width: 1100px
+  }
+}
+
+
+
+
 
 
 .blink_me {

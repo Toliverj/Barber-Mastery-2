@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { cardStyle } from './QuizSelectionCss'
-import { CardActionArea, CardContent, Typography, Card, Grid, CardMedia } from '@mui/material'
+import { CardActionArea, CardContent, Typography, Card, Grid, CardMedia, Box } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { getDownloadURL, ref } from 'firebase/storage'
 import { storage } from '../firebase'
@@ -53,7 +53,7 @@ const SelectQuizTopicCard = ({card}) => {
 <Grid item key={card} xs={12} sm={6} md={4} className='shrink-on-hover'>
                 <Card
 
-                style={ selectQuiz.includes(card) ? {backgroundColor: '#8cd3ff'} : null}
+                style={ selectQuiz.includes(card) ? {backgroundColor: '#FFB6C1'} : null}
 
 
                key={card}
@@ -62,20 +62,27 @@ const SelectQuizTopicCard = ({card}) => {
                 elevation={10}
                   sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
                 >
+                  <Box display={'flex'} justifyContent = 'flex-end' alignItems={'center'} padding={'5px 10px 0 0'} borderRadius={'10px'}>
+                    <Typography color={localStorage.getItem(card) >= 90 && 'green' || localStorage.getItem(card) < 90 && localStorage.getItem(card) > 60 && '#ffba01' || localStorage.getItem(card) < 70 && 'red' }  variant = 'h3'>•</Typography>
+                  <Typography padding={'20px'}   align = 'right'>{localStorage.getItem(card)} %</Typography>
+                  </Box>
 
 <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '40px'}}
         image={image}
         
         
       />
                   
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2" align='center'>
+                  
+                    <Typography gutterBottom variant="h5" fontWeight={'bold'} component="h2" align='center'>
                       {card}
                     </Typography>
+
+                    
                    
                   </CardContent>
                 </Card>

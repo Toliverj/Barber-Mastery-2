@@ -1,4 +1,4 @@
-import { Avatar, Button, Container, CssBaseline, Grid, Stack } from '@mui/material'
+import { Avatar, Button, CircularProgress, Container, CssBaseline, Grid, IconButton, Stack } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -17,9 +17,8 @@ import { auth, db } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {ref, getDownloadURL} from 'firebase/storage'
 import {storage} from '../firebase'
-import { Lock } from '@mui/icons-material';
+import { AccountCircle, Home, Lock } from '@mui/icons-material';
 import QuizGeneratorCard from './QuizGeneratorCard';
-import LogoutIcon from '@mui/icons-material/Logout';
 
 
 const Quiz = () => {
@@ -54,7 +53,7 @@ const Quiz = () => {
       getDoc(adminRef)
       .then((docu) => {
 
-        if(auth?.currentUser?.uid === docu.data().id)
+        if(auth?.currentUser?.uid === docu.data()?.id)
         {
           setIsAdmin(true)
         }
@@ -66,7 +65,7 @@ const Quiz = () => {
     .then((docu) => {
 
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         
         setNoVideoAuth(true)
       
@@ -87,7 +86,7 @@ const Quiz = () => {
     getDoc(quizRef)
     .then((docu) => {
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
         setNoQuizAuth(true)
         if(noQuizAuth && noBundleAuth) {
           navigate('/dashboard')
@@ -145,7 +144,7 @@ const Quiz = () => {
           docSnap.data().Questions.forEach((question) => {
           })
          
-          setQuestions(shuffleArray(docSnap.data().Questions))
+          setQuestions(docSnap.data().Questions)
           setSummary(docSnap.data().Summary)
           
         } 
@@ -162,20 +161,7 @@ const Quiz = () => {
 
     
 
-    const handleLogout = async() => {
-      const docRef = await doc(db, "Users1", auth?.currentUser?.uid);
-      var answer = window.confirm(`Are you sure you want to sign out?`);
-       if (answer) {
-
-       // setDoc(docRef, {Session: 0})
-        await signOut(auth)
-       // window.location.reload()
-        
-       }
-
-       
-      
-    }
+   
 
   return (
 
@@ -183,22 +169,35 @@ const Quiz = () => {
 
 <Box
           sx={{
-            bgcolor: 'background.paper',
+       
             pt: 8,
             pb: 6,
           }}
         >
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '20px', borderRadius: '10px'}}>
 
-          <HomeIcon onClick = {() => navigate('/dashboard')}/>
+          <Box display={'flex'} justifyContent = 'flex-end' padding={'0 10px'}>
+              <IconButton>
+
+              <Home  onClick = {() => navigate('/dashboard')}/>
+
+              </IconButton>
+              <IconButton>
+
+          <AccountCircle onClick = {() => navigate('/accountpage')}/>
+
+              </IconButton>
+            
+
+            </Box>
 
           <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '30px'}}
         image={image}       
       />
 
@@ -207,6 +206,7 @@ const Quiz = () => {
               variant="h4"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                {id}
@@ -224,8 +224,8 @@ const Quiz = () => {
               spacing={2}
               justifyContent="center"
             >
-              <Button onClick={() => navigate(-1)} variant="outlined">Go Back</Button>
-              <Button onClick={handleLogout} variant="contained"><LogoutIcon/> </Button>
+              <Button    onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
+              <Button  onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>
               
             </Stack>
             </Card>
@@ -244,7 +244,7 @@ const Quiz = () => {
       <CssBaseline />
       
     
-      <Container sx={{ py: 8 }} maxWidth="md">
+      <Container sx={{ py: 8 }} maxWidth="sm">
     
       <Grid item xs={12} sm={8} md={12} margin = 'auto'>
         <Box
@@ -261,9 +261,9 @@ const Quiz = () => {
           padding = {5}
           borderRadius = {10}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <Lock/>
-          </Avatar>
+          
+           <CircularProgress/>
+         
           <Typography component="h1" variant="h5" align='center' width= '20vw'>
            Loading...
            
@@ -278,7 +278,7 @@ const Quiz = () => {
 {/*  */}
 
 {questions.length &&
-<Container sx={{ py: 8 }} maxWidth="md">
+<Container sx={{ py: 8 }} >
     <Grid container spacing={4}>
     {questions.map((question, i) => (
 

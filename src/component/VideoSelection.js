@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Container, CssBaseline, Grid, Stack } from '@mui/material'
+import { Avatar, Button, Card, Container, CssBaseline, Grid, IconButton, Stack } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography';
 
@@ -12,8 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import {collection, doc, getDoc, getDocs, query, setDoc} from 'firebase/firestore'
 import { db } from '../firebase';
 import VideoSelectionCard from './VideoSelectionCard'
-import { Lock} from '@mui/icons-material';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { AccountCircle, Home, Lock} from '@mui/icons-material';
 
 
 const VideoSelection = () => {
@@ -45,7 +44,7 @@ const VideoSelection = () => {
     .then((docu) => {
 
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
        
         setNoVideoAuth(true)
         if(noVideoAuth && noBundleAuth) {
@@ -73,7 +72,7 @@ const VideoSelection = () => {
     .then((docu) => {
  
 
-      if(!(docu.data().id.includes(auth?.currentUser?.uid))) {
+      if(!(docu.data()?.id.includes(auth?.currentUser?.uid))) {
        
         setNoQuizAuth(true)
         
@@ -103,19 +102,7 @@ const VideoSelection = () => {
    
 
 
-    const logout = async() => {
-      const docRef = await doc(db, "Users1", auth?.currentUser?.uid);
-      var answer = window.confirm(`Are you sure you want to sign out?`);
-       if (answer) {
-
-        await signOut(auth)
-
-        
-       }
-
-       
-      
-    }
+    
 
     useEffect(() => {
 
@@ -128,6 +115,7 @@ const VideoSelection = () => {
         snapshot.forEach((doc) => {
          
 
+         
           tempArr.push(doc.id)
           setQuizzes(tempArr)
           
@@ -154,7 +142,7 @@ const VideoSelection = () => {
 
       <Box
           sx={{
-            bgcolor: 'background.paper',
+           
             pt: 8,
             pb: 6,
           }}
@@ -162,10 +150,23 @@ const VideoSelection = () => {
 
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px 10px', borderRadius: '10px'}}>
 
-          <HomeIcon onClick = {() => navigate('/dashboard')}/>
+          <Box display={'flex'} justifyContent = 'flex-end' padding={'0 10px'}>
+              <IconButton>
+
+              <Home  onClick = {() => navigate('/dashboard')}/>
+
+              </IconButton>
+              <IconButton>
+
+          <AccountCircle onClick = {() => navigate('/accountpage')}/>
+
+              </IconButton>
+            
+
+            </Box>
          
         
             
@@ -174,9 +175,10 @@ const VideoSelection = () => {
               variant="h2"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
-              Practical
+              Practical Exam Practice
             </Typography>
             <Typography variant="h5" align="center" color="text.secondary" paragraph>
               Video tutorials of the practical broken down in sections so it is easier to digest
@@ -190,7 +192,7 @@ const VideoSelection = () => {
 
               <Button disabled = {noQuizAuth && noBundleAuth} onClick={() => navigate('/quizselection')} variant="outlined">Written</Button>
               <Button color = 'secondary' disabled = {noVideoAuth && noBundleAuth} onClick={() => navigate('/videoselection')} variant="outlined">Practical</Button>
-              <Button onClick={logout} variant="contained"> <LogoutIcon/> </Button>
+              
               
               
               
@@ -206,7 +208,7 @@ const VideoSelection = () => {
 
 
 
-<Container sx={{ py: 8 }} maxWidth="md">
+<Container sx={{ py: 8 }} maxWidth="lg">
     <Grid container spacing={4}>
     {quizzes.map((card) => (
 

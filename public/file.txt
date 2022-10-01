@@ -1,0 +1,9 @@
+1. This is the question
+a. Choice 1
+b. Choice 2
+c. Choice 3
+d. Choice 4
+
+Ans: Choice 2
+
+Summary: Why is it

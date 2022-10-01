@@ -38,20 +38,20 @@ const QuizGeneratorCard = ({card, type}) => {
                 
                 onClick={() => navigate(`/selectquiz`)}
                 elevation={10}
-                  sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}
+                  sx={{ height: '100%', display: 'flex', flexDirection: 'column',backgroundColor: '#FFB6C1', borderRadius: '10px' }}
                 >
 
 <CardMedia
         component="img"
         height="140"
-        style={{objectFit: 'contain', paddingTop: '30px'}}
+        style={{objectFit: 'contain', marginTop: '40px'}}
         image={image}
         
         
       />
                   
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2" align='center'>
+                    <Typography gutterBottom variant="h5" fontWeight='bold' component="h2" align='center'>
                       {card} {type}
                     </Typography>
                    

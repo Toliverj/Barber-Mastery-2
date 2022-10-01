@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import Home from './component/Home'
 import QuizSelection from './component/QuizSelection'
@@ -15,11 +15,15 @@ import Dashboard from './component/Dashboard'
 import QuizGenerator from './component/QuizGenerator'
 import AdminInput from './component/AdminInput'
 import SelectQuizTopic from './component/SelectQuizTopic'
-import { Container, Typography } from '@mui/material'
+import { Container, createTheme, ThemeProvider, Typography } from '@mui/material'
 import { signOut } from 'firebase/auth'
 import { auth, db } from './firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import { useBeforeunload } from 'react-beforeunload'
+import CircularStatic from './component/TestingScreen'
+
+import TestingScreen from './component/TestingScreen'
+import AccountPage from './component/AccountPage'
 
 
 
@@ -31,7 +35,7 @@ const App = () => {
    
     return (
      
-      <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      <Typography variant="body2" color="white" align="center"  {...props}>
         <Typography> Contact: jhaelintoliver1@live.com</Typography>
         {'Copyright © '}
         
@@ -43,13 +47,25 @@ const App = () => {
    
     );
   }
+  const [mode, setMode] = useState('light')
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: mode
+    }
+  })
+
+
 
  
  
 
   return (
+    <ThemeProvider theme = {darkTheme}>
+
     <div className='app' onContextMenu = {(e) => e.preventDefault() }>
       
+    
 
       <Router>
 
@@ -68,7 +84,11 @@ const App = () => {
             <Route path='/quizgenerator' element = {<QuizGenerator/>}/>
             <Route path='/admin/:id' element = {<AdminInput/>}/>
             <Route path='*' element = {<div>Page not found</div>}/>
-            <Route path='/selectquiz' element = {<SelectQuizTopic/>}/>  
+            <Route path='/selectquiz' element = {<SelectQuizTopic/>}/>
+            <Route path='/accountpage' element = {<AccountPage/>}/>
+
+
+            {/* <Route path='/' exact element = {<TestingScreen/> }/>   */}
 
         
             
@@ -79,9 +99,16 @@ const App = () => {
 
       </Router>
 
+      {/* <CircularStatic/> */}
+
       <Copyright/>
 
+
+      
+
     </div>
+
+    </ThemeProvider>
    
   )
 }

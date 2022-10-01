@@ -16,7 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {useEffect, useState} from 'react'
 import { arrayUnion, collection, doc, getDoc, increment, query, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { Card, CardContent, CardHeader, Container } from '@mui/material';
+import { Card, CardContent, CardHeader, CircularProgress, Container } from '@mui/material';
 import StarIcon from '@mui/icons-material/StarBorder';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import axios from 'axios';
@@ -105,21 +105,7 @@ const [joke, setJoke] = useState('')
   }, [])
 
   
-useEffect(() => {
 
-  var fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-  if (!fs) {
-    console.log("check failed?");
-  } else {
-    fs(window.TEMPORARY,
-       100,
-       console.log.bind(console, "not in incognito mode"),
-       console.log.bind(console, "incognito mode"));
-  }
-
-
-
-}, [])
 
 
 
@@ -134,7 +120,10 @@ useEffect(() => {
    const [signUpPassword, setSignUpPassword] = useState('')
    const [isLoading, setIsLoading] = useState(false)
 
+
   const handleSignUp = async(e) => {
+    
+   
 
       e.preventDefault()
 
@@ -148,61 +137,76 @@ useEffect(() => {
   if (!error) {
       try {
 
+        //new try catch
 
         setIsLoading(true)
 
-          //setError('')
-          //change local host to server on heroku
-          const {id} = paymentMethod
-          const response = await axios.post('https://barber-mastery.herokuapp.com/payment', {
-              amount: data.Price,
-              id
-          })
-
-          if (response.data.success) {
-
-            localStorage.setItem('email', signUpEmail)
-            localStorage.setItem('password', signUpPassword)
-              
-              console.log('Successful payment')
-              setSuccessMessage('Successful! Please Log In')
-              setSuccess(true)
-              setSignUpEmail('')
-              setSignUpPassword('')
-
-              const user = await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
-
-            // working
-            await updateDoc(doc(db, 'Users', pack), {
-                id: arrayUnion(auth?.currentUser?.uid)
-                
-            })
-
-            localStorage.setItem('uid', auth.currentUser.uid)
-             // 
-
-             const docRef = doc(db, "Users1", auth.currentUser.uid);
-
-             getDoc(docRef)
-               .then((docu) => {
+        
+          const paymentMethod = await stripe.createPaymentMethod({
+            card: elements.getElement("card"),
+            type: "card",
+          });
+  
+  
+          const response = await fetch('https://barber-mastery-subscription.herokuapp.com/payment', {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: signUpEmail,
+              email: signUpEmail,
+              paymentMethod: paymentMethod.paymentMethod.id,
+            }),
+          });
+          if (!response.ok) {
+            navigate('/')
+            return alert("Payment unsuccessful!")
+            
+          } 
+          const data = await response.json();
+          console.log(data.customerID, 'dfjsl')
+          console.log(data, 'finger')
+          setSuccess(true)
          
-         
-                 // setDoc(docRef, {Grade: 0})
-      
-           
-                 
+          const confirm = await stripe.confirmCardPayment(data.clientSecret);
+          if (confirm.error) {
+            navigate('/')
+
+            return alert("Payment unsuccessful!");
+            
+
+          } 
+          //createUser in firebase
+          localStorage.setItem('barberMasterycustomerID', data.customerID)
+          localStorage.setItem('email', signUpEmail)
+          localStorage.setItem('password', signUpPassword)
+
+          const user = await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
+
+               // working
+               await updateDoc(doc(db, 'Users', pack), {
+  
+                   id: arrayUnion(auth?.currentUser?.uid),
+                  
+                  
                })
-     
-                 // 
+  
+               //testing end
+  
+               localStorage.setItem('uid', auth.currentUser.uid)
+              
+  
+               navigate('/dashboard')
+  
+        
 
-            navigate('/dashboard')
-
-             
-          }
-          
+    
 
       } catch (error) {
           console.log('error', error)
+          navigate('/')
+          setError('There was an error')
       }
   }
 
@@ -215,7 +219,7 @@ useEffect(() => {
 
   return (
     
-    <ThemeProvider theme={theme}>
+    <>
       {isLoading && 
       
       <Grid container spacing={0}direction="column" alignItems="center" justifyContent="center" component="main" sx={{ height: '100vh' }}>
@@ -238,12 +242,9 @@ useEffect(() => {
           borderRadius = {10}
         >
           
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-         
+        
           <Typography component="h1" variant="h5" align='center'>
-          Loading...
+          <CircularProgress/>
            
           </Typography>
           <Typography component="h3" variant="h5" align='center'>
@@ -274,6 +275,7 @@ useEffect(() => {
             elevation = {10}
             padding = {5}
             borderRadius = {10}
+            
           >
              <Container>
            
@@ -287,10 +289,7 @@ useEffect(() => {
               Sign up
              
             </Typography>
-            <Typography className='blink_me' component="h1" variant="body1" gutterBottom color = 'red'>
-              *Only one account per device*
-             
-            </Typography>
+            
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
@@ -325,10 +324,10 @@ useEffect(() => {
                 onClick = {handleSignUp}
                 disabled = {!signUpEmail.length || !signUpPassword.length}
               >
-                Sign Up / {pack} ${((data?.Price/100).toFixed(2))}
+                Subscribe - ${((data?.Price/100).toFixed(2))}/month
               </Button>
 
-              {isLoading && <div>Please Wait...</div>}
+              <Typography>{error}</Typography>
              
              
             </Box>
@@ -339,7 +338,7 @@ useEffect(() => {
       </Grid>
 }
 
-    </ThemeProvider>
+    </>
   );
 }
 

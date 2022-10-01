@@ -146,7 +146,7 @@ const Admin = ({location}) => {
     
     const handleSubmit = async() => {
 
-      const imageRef = ref(storage, `images/${topicName}.png`)
+      const imageRef = ref(storage, `images/${topicName}`)
       uploadBytes(imageRef, image)
       .then(() => {
         getDownloadURL(imageRef)
@@ -188,14 +188,13 @@ const Admin = ({location}) => {
 
       <Box
           sx={{
-            bgcolor: 'background.paper',
             pt: 8,
             pb: 6,
           }}
         >
 
 
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
           <Card elevation={10} style = {{padding: '40px 10px', borderRadius: '10px'}}>
           <HomeIcon onClick = {() => navigate('/dashboard')}/>
             <Typography
@@ -203,6 +202,7 @@ const Admin = ({location}) => {
               variant="h2"
               align="center"
               color="text.primary"
+              fontWeight='bold'
               gutterBottom
             >
                 Admin
@@ -234,7 +234,7 @@ const Admin = ({location}) => {
 
 {/* new grid system */}
 
-<Container sx={{ py: 8 }} maxWidth="md">
+<Container sx={{ py: 8 }} maxWidth="lg">
   <Grid item sx={{py:2}} >
   <TextField value = {topicName} onChange = {(e) => setTopicName(e.target.value)}  fullWidth label = 'Enter new topic'/>
   </Grid>

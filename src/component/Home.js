@@ -19,16 +19,50 @@ import { auth, db, storage } from '../firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { Stack } from '@mui/material';
+import { Modal, Stack, styled } from '@mui/material';
 
 import { Paper } from '@mui/material'
 import { getDownloadURL, ref } from 'firebase/storage';
 import { ArrowDownward, ArrowDownwardOutlined, ArrowDownwardRounded, ArrowDownwardSharp, ArrowDownwardTwoTone } from '@mui/icons-material';
-import {Element, Link as ScrollLink} from 'react-scroll'
+import {Element as ScrollTo, Link as ScrollLink} from 'react-scroll'
+import GeneratedQuizCard from './GeneratedQuizCard';
+import QuizCard from './QuizCard';
 
 
 
+const fakeQuestions = [
+  {
+    id: 'hello',
+    question: `The study of hair is called _`,
+    answer: 'Trichology',
+    choices: [
+      'Trichology','Histology', 'Osteology', 'Numerology'
+    ],
+    summary:
+    [ 'Trich in greek meaks hair.' , 'Ology means the study of.',  'Trich + ology = The study of hair',],
+    picture: '/images/Logo.png',
+    number: 1
+  }
+  
+ 
+]
+const fakeFlashCard = [
+  {
+    id: 'hello',
+    question: `The study of hair is called _  (Click to flip)`,
+    answer: 'Trichology',
+    choices: [
+      'Choice 1','Choice 2', 'Choice 3', 'Choice 4'
+    ],
+    summary:
+    [ 'Trich in greek meaks hair.' , 'Ology means the study of.',  'Trich + ology = The study of hair',],
+    picture: '/images/Logo.png',
+    number: 1
+  },
 
+  
+ 
+]
 
 
 
@@ -90,8 +124,8 @@ useEffect(() => {
 
 
 
-  const setPrice = (pack) => {
-    navigate(`signup/${pack}`)
+  const setPrice = () => {
+    navigate(`signup/Bundle Pack`)
   }
 
   //add video
@@ -110,17 +144,56 @@ useEffect(() => {
   addImage()
 },[])
 
+const [modalOpen, setModalOpen] = React.useState(false)
+
+const StyledModal = styled(Modal) ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '20px'
+})
+
 
 
 
   return (
     <>
+     <StyledModal
+  open={modalOpen}
+  onClose={() => setModalOpen(false)}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Card sx = {{width: 450, height: 220, padding: 2}}   bgcolor={'background.default'} color = {'text.primary'} p = {3} >
+    <Typography   pb={2} id="modal-modal-title" align='center' variant="h4" component="h2">
+   Before signing up... 
+
+    </Typography>
+    <Typography  pb={2} id="modal-modal-title" align = 'center'  variant="h6" component="h2">
+    <ul>
+      <li>• Do not sign up in incognito/private mode</li>
+      <li>• There is only one device per account</li>
+    </ul>
+
+    </Typography>
+   
+    <Box  display = 'flex' flexDirection= 'row' alignItems= 'center' justifyContent={'center'} >
+    <Button sx = {{marginRight: 3}} onClick = {setPrice}  variant = 'contained'>Sign Up</Button>
+    <Button sx = {{ backgroundColor: '#FF4D4D', "&:hover": { backgroundColor: "#FF4D4D" }}} onClick={() => setModalOpen(false)} variant = 'contained'>Cancel</Button>
+  
+    </Box>
+
+   
+   
+    
+  </Card>
+</StyledModal>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
      
       {/* Hero unit */}
       <Box
           sx={{
-            bgcolor: '#faf9f6',
+           
             pt: 8,
             pb: 6,
           }}
@@ -128,7 +201,7 @@ useEffect(() => {
 
 
 
-          <Container  maxWidth="md">
+          <Container  maxWidth="lg">
 
            
 <Card elevation={10} style = {{padding: '20px', borderRadius: '10px'}}>
@@ -136,19 +209,21 @@ useEffect(() => {
             <img style = {{display:'block', marginLeft: 'auto', marginRight: 'auto', width: '50%'}} width={400} src='/images/transparent logo.png'/>
             
         
-            <Typography  variant="h5" align="center" color="text.secondary" paragraph>
+            <Typography  variant="h5" align="center" color="text.secondary" fontWeight={'bold'} paragraph>
 
             A complete study kit to help student barbers excel!
              
             </Typography>
-            <Typography  variant="h5" align="center" color="text.secondary" paragraph>
+            <ScrollLink to = 'signup_section'>
+            <Typography className='shrink-on-hover' fontWeight={'bold'}  variant="h5" align="center" color="text.secondary" paragraph>
 
-           Get Started Today! <ScrollLink to = 'signup_section'><ArrowDownward style = {{border: '1px solid gray', borderRadius: '25px' }} className='shrink-on-hover'/></ScrollLink>
+           Click here to get started <ArrowDownward style = {{border: '1px solid gray', borderRadius: '25px' }} />
 
              
             </Typography>
+            </ScrollLink>
             <Container
-        maxWidth="md"
+        maxWidth="lg"
         component="footer"
         sx={{
           borderTop: (theme) => `1px solid ${theme.palette.divider}`,
@@ -179,54 +254,118 @@ useEffect(() => {
             </Card>
           </Container>
          
-          <Container sx={{ py: 8 }} maxWidth="md">
+          <Container sx={{ py: 8 }} maxWidth="lg">
           <Card elevation={10} style = {{padding: '20px 10px', borderRadius: '10px'}}>
-    <Grid container
-  spacing={0}
-  direction="row"
-  alignItems="center"
-  justifyContent="center"
-  >
-     
-<Grid  item  xs={12} sm={6} md={6}  >        
-<Typography variant="h4" align="center" color="text.secondary" paragraph>Study Guide</Typography>
+
+  
+    <Grid container spacing={4} alignItems = 'center' justifyContent={'center'} display = 'flex' flexDirection={'row'}>
+  <Grid item xs={12}>
+  <Typography variant="h4" fontWeight={'bold'} align="center"  paragraph>Video Demo</Typography>
                  
-               <Typography variant = 'h5' align = 'center' color ='text.secondary'>Sign up and gain access to 20 interactive study guides and videos to help you pass all barbering prerequisites! </Typography>
-    
-                    
+                 <Typography variant = 'h5' align = 'center' fontWeight={'bold'} color ='text.secondary'>Sign up and gain access to 20 interactive study guides and videos to help you pass all barbering prerequisites! </Typography>
+      
   </Grid>
-<Container style = {{ display: 'grid', placeItems: 'center'}} margin='auto' justifyItems = 'center' alignContent='center'  key={''} xs={12} sm={6} md={6}  >        
+
+  
+
+  <video className='demoVideo' loop autoPlay playsInline muted src='/demovid.mov'/>
 
 
-                 
-                 <video   width={300} autoPlay playsInline loop muted src='/images/My Movie 49.mov'/>
-                 
 
-                    
+  
+</Grid>
+
+    </Card>
   </Container>
 
-    </Grid>
+  <Box
+        
+        >
+
+
+          <Container maxWidth="lg" >
+          <Card elevation={10} style = {{padding: '20px', borderRadius: '10px'}}>
+            <Typography
+              component="h1"
+              variant="h3"
+              align="center"
+              color="text.primary"
+              fontWeight={'bold'}
+              gutterBottom
+              
+            >
+               Key Features
+            </Typography>
+            <Typography variant="h6" align="center" color="text.secondary" paragraph>
+
+            <ul>
+      <li style={{paddingBottom: '20px'}}>• Grading system to keep track of your scores</li>
+      <li style={{paddingBottom: '20px'}}>• Flash cards to study before taking mock exams</li>
+      <li style={{paddingBottom: '20px'}}>• Customizable mock exams that generate random quizzes</li>
+      <li style={{paddingBottom: '20px'}}>• Practical tutorial videos with steps from PSI</li>
+      <li style={{paddingBottom: '20px'}}>• Text to speech for auditory learning</li>
+      <li style={{paddingBottom: '20px'}}>• Sign up to view more... </li>
+      </ul>
+   
+            </Typography>
+           
+            </Card>
+          </Container>
+          
+        </Box>
+          <Container sx={{ py: 8 }} maxWidth="lg">
+          <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
+   
+    <Grid container spacing={4} alignItems = 'center' justifyContent={'center'}>
+ 
+  
+ 
+  
+</Grid>
+    <Grid container spacing={4} alignItems = 'center' justifyContent={'center'}>
+  <Grid item xs={12}>
+  <Typography variant="h4" fontWeight={'bold'} align="center"  paragraph>Demo</Typography>
+                 
+                 <Typography variant = 'h5' align = 'center' fontWeight={'bold'} color ='text.secondary'>Sign up and gain access to 20 interactive study guides and videos to help you pass all barbering prerequisites! </Typography>
+      
+  </Grid>
+  {fakeFlashCard.map((question, i) => (
+    <QuizCard question = {question.question} answer = {question.answer} choices = {question.choices} summary = {question.summary} number = {i + 1}/>
+  ))}    
+
+  
+
+  
+  {fakeQuestions.map((question, i) => (
+    <GeneratedQuizCard key={i} number = {i + 1} question = {question?.question} answer = {question?.answer} choices = {question?.choices}  summary = {question?.summary} id  = {question?.id} picture = {question.picture} />
+  ))}    
+ 
+  
+ 
+  
+</Grid>
+
     </Card>
   </Container>
   
  
         </Box>
       {/* End hero unit */}
-      <Element name='signup_section'>
-      <Container maxWidth="md" component="main">
+      <ScrollTo name='signup_section'>
+      <Container maxWidth="lg" component="main">
       <Card elevation={10} style = {{padding: '40px', borderRadius: '10px'}}>
       <Typography
               component="h1"
               variant="h3"
               align="center"
               color="text.primary"
+              fontWeight={'bold'}
               
               style={{paddingBottom: '10px'}}
             >
-               Sign Up
+               Get Started Here!
             </Typography>
-            <Typography align='center' gutterbottom variant = 'h6' color = 'red' paddingBottom='20px' className='blink_me'>*Do not sign up in incognito/private mode*</Typography>
-        <Grid container spacing={5} alignItems="flex-end">
+        <Grid container spacing={5} >
           
           {data.map((tier) => (
             // Enterprise card is full width at sm breakpoint
@@ -235,7 +374,7 @@ useEffect(() => {
               key={tier.id}
               xs={12}
               sm={tier.id === 'Bundle Pack' ? 12 : 6}
-              md={4}
+              md={12}
             >
               
               <Card>
@@ -261,10 +400,11 @@ useEffect(() => {
                       justifyContent: 'center',
                       alignItems: 'baseline',
                       mb: 2,
+                      
                     }}
                   >
                     <Typography component="h2" variant="h3" color="text.primary">
-                      ${tier.info.Price/100}
+                      ${tier.info.Price/100}<span style = {{fontSize: '18px'}}>/month</span>
                     </Typography>
                   
                   </Box>
@@ -272,9 +412,10 @@ useEffect(() => {
                     {tier.info.Info.map((line) => (
                       <Typography
                         component="li"
-                        variant="subtitle1"
+                        variant="h5"
                         align="center"
                         key={line}
+                        gutterBottom
                       >
                         • {line}
                       </Typography>
@@ -282,7 +423,7 @@ useEffect(() => {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <Button onClick={() =>setPrice(tier.id) } fullWidth >
+                  <Button onClick={() =>setModalOpen(true) } fullWidth >
                     Sign Up Here!
                   </Button>
                 </CardActions>
@@ -292,65 +433,10 @@ useEffect(() => {
         </Grid>
         </Card>
       </Container>
-      </Element>
+      </ScrollTo>
       {/* Footer */}
-      <Box
-          sx={{
-            bgcolor: 'FAF9F6',
-            pt: 8,
-            pb: 6,
-          }}
-        >
-
-
-          <Container maxWidth="md" style={{backgroundColor: 'FAF9F6'}}>
-          <Card elevation={10} style = {{padding: '20px', borderRadius: '10px'}}>
-            <Typography
-              component="h1"
-              variant="h3"
-              align="center"
-              color="text.primary"
-              gutterBottom
-              
-            >
-               Exam Topics
-            </Typography>
-            <Typography variant="h6" align="center" color="text.secondary" paragraph>
-
-            <ul>
-      <li style={{paddingBottom: '20px'}}>• Licensing and Regulation (8% of questions)</li>
-      <li style={{paddingBottom: '20px'}}>• Sanitation, Disinfection, Sterilization, and Safety (29% of questions)</li>
-      <li style={{paddingBottom: '20px'}}>• Hair and Scalp Care (5% of questions)</li>
-      <li style={{paddingBottom: '20px'}}>• Haircutting and Hairstyling (14% of questions)</li>
-      <li style={{paddingBottom: '20px'}}>• Hair coloring (8% questions)</li>
-      <li style={{paddingBottom: '20px'}}>• Chemical Texture Services (12% questions)</li>
-      </ul>
-   
-            </Typography>
-            <Stack
-              sx={{ pt: 4 }}
-              direction="row"
-              spacing={2}
-              justifyContent="center"
-            >
-
-              
-            </Stack>
-            </Card>
-          </Container>
-          
-        </Box>
-      <Container
-        maxWidth="md"
-        component="footer"
-        sx={{
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-          mt: 8,
-          py: [3, 6],
-        }}
-      >
-       
-      </Container>
+    
+     
       {/* End footer */}
     </>
   );
